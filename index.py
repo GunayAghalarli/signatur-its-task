@@ -60,6 +60,7 @@ for plate in plate_objects:
 step4_end = time.time()
 print(f"Grouping plates by camera_id took {step4_end - step4_start:.4f} seconds")
 
+
 # itearting through camera objects
 step5_start = time.time()
 for camera in camera_objects:
@@ -67,24 +68,43 @@ for camera in camera_objects:
     cam_id = camera["camera_id"]
     cam_width = camera["width"]
     cam_height = camera["height"]
-    # create white canvas for each camera
-    camera_frame = np.ones((cam_height, cam_width), dtype=np.uint8)*255
+
+    # Create an empty "heatmap" for the camera frame
+    heatmap = np.zeros((cam_height, cam_width), dtype=np.int32)
+    
+    # # create white canvas for each camera
+    # camera_frame = np.ones((cam_height, cam_width), dtype=np.uint8)*255
 
     # Get plates for this camera
     plates = plates_by_camera.get(cam_id, [])
 
-     # Draw each plate as a polygon
+    # Add each plate's coverage to the heatmap
     for plate in plates:
         if not plate['coordinates']:
             continue  # Skip if coordinates are invalid or empty
 
         # Convert coordinates to numpy array
         plate_coords = np.array(plate['coordinates'], dtype=np.int32)
+        cv2.fillPoly(heatmap, [plate_coords], color=1)
 
-        cv2.polylines(camera_frame, [plate_coords], isClosed=True, color=(0, 0, 255), thickness=2)
+        # After drawing the plate, we increment the heatmap value for the pixels that are covered
+        for y, x in plate_coords:
+            if 0 <= x < cam_width and 0 <= y < cam_height:
+                heatmap[y, x] += 1  # Increment the visited pixel count
+
+    # Find the region with the most overlap
+    max_visits = np.max(heatmap)
+    max_region = np.argwhere(heatmap == max_visits)
+
+    # Display results for the current camera
+    print(f"Camera {cam_id}: Maximum overlap of {max_visits} plates at regions: {max_region}")
+
+    # Optionally visualize the heatmap
+    normalized_heatmap = cv2.normalize(heatmap, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+    heatmap_colored = cv2.applyColorMap(normalized_heatmap, cv2.COLORMAP_JET)
 
     # displays canvas for each camera
-    cv2.imshow("Camera " + str(cam_id) + " Canvas ", camera_frame)
+    cv2.imshow(f"Camera {cam_id} Heatmap", heatmap_colored)
 step5_end = time.time()
 print(f"Drawing and displaying frames took {step5_end - step5_start:.4f} seconds")
 
@@ -92,4 +112,5 @@ print(f"Drawing and displaying frames took {step5_end - step5_start:.4f} seconds
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 connection.close()
-
+end_time = time.time()
+print(f"Total script execution time: {end_time - start_time:.4f} seconds")
