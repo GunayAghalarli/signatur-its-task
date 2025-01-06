@@ -44,7 +44,7 @@ Ensure the following files exist:
    - The script identifies the region with the maximum overlap, where plates frequently appear.
 
 4. **Visualization:**
-   - For each camera, a colorized heatmap is generated. The heatmap highlights regions with more plate overlaps with brighter colors.
+   - For each camera, a colorized heatmap is generated. The heatmap highlights regions with more plate overlaps with blue color and unused parts of the canvas is white color.
 
 5. **Performance Tracking:**
    - The script tracks and prints the time taken for different stages (fetching data, processing coordinates, generating the heatmap).
