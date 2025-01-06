@@ -57,18 +57,6 @@ Ensure the following files exist:
 - The script displays heatmaps of the camera frames, where the colors represent the number of plates observed in those regions.
 - For each camera, the script prints the regions with the most plate overlaps and the count of plates in those regions.
 
-## Example Output (Terminal):
-```
-Fetching camera details took 0.0200 seconds
-Fetching plate details took 0.0154 seconds
-Processing and cleaning coordinates took 0.0312 seconds
-Grouping plates by camera_id took 0.0105 seconds
-Camera 1: Maximum overlap of 15 plates at regions: [[y, x], [y, x], ...]
-Camera 2: Maximum overlap of 10 plates at regions: [[y, x], [y, x], ...]
-Drawing and displaying frames took 0.1450 seconds
-Total script execution time: 0.2310 seconds
-```
-
 ## How to Run
 
 1. Make sure the `signaturits_metadata.db` database exists and is properly structured (i.e., contains `camera_config` and `readings` tables).
