@@ -25,7 +25,7 @@ pip install opencv-python numpy
 Ensure the following files exist:
 
 - The SQLite database file (`signaturits_metadata.db`) containing the required camera and plate data.
-- The Python script file (`heatmap_generator.py` or whatever name you choose).
+- The Python script file (`index.py`).
 
 ## How It Works
 
