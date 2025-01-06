@@ -14,7 +14,6 @@ cursor = connection.cursor()
 # create the camera frame and making all pixels white
 width, height = 1280, 720
 # get camera ids from db and store in an array
-# Fetch camera details
 step1_start = time.time()
 camera_details = cursor.execute("SELECT camera_id, width, height FROM camera_config").fetchall()
 camera_objects = [{"camera_id": cam[0], "width": cam[1], "height": cam[2]} for cam in camera_details] 
@@ -22,7 +21,6 @@ step1_end = time.time()
 print(f"Fetching camera details took {step1_end - step1_start:.4f} seconds")
 
 # get camera id and coordinates from db
-# Fetch plate details
 step2_start = time.time()
 plate_details = cursor.execute("SELECT reading_id, camera_id, coordinates FROM readings").fetchall()
 plate_objects = [{"reading_id":plate[0],"camera_id": plate[1], "coordinates": plate[2]} for plate in plate_details]
