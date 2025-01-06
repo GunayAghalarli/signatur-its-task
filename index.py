@@ -99,9 +99,12 @@ for camera in camera_objects:
     # Display results for the current camera
     print(f"Camera {cam_id}: Maximum overlap of {max_visits} plates at regions: {max_region}")
 
-    # Optionally visualize the heatmap
+    # visualize the heatmap
     normalized_heatmap = cv2.normalize(heatmap, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     heatmap_colored = cv2.applyColorMap(normalized_heatmap, cv2.COLORMAP_JET)
+
+    # set unused (zero) heatmap values to white
+    heatmap_colored[normalized_heatmap == 0] = [255, 255, 255]  
 
     # displays canvas for each camera
     cv2.imshow(f"Camera {cam_id} Heatmap", heatmap_colored)
