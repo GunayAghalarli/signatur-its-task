@@ -4,6 +4,7 @@ import numpy as np
 import re
 import json
 import time
+import matplotlib.pyplot as plt
 
 start_time = time.time()
 
@@ -71,7 +72,7 @@ for camera in camera_objects:
     heatmap = np.zeros((cam_height, cam_width), dtype=np.int32)
     
     # # create white canvas for each camera
-    # camera_frame = np.ones((cam_height, cam_width), dtype=np.uint8)*255
+    camera_frame = np.ones((cam_height, cam_width), dtype=np.uint8)*255
 
     # Get plates for this camera
     plates = plates_by_camera.get(cam_id, [])
@@ -85,13 +86,21 @@ for camera in camera_objects:
         plate_coords = np.array(plate['coordinates'], dtype=np.int32)
         cv2.fillPoly(heatmap, [plate_coords], color=1)
 
+        # Plot the plate location on the white canvas
+        cv2.polylines(camera_frame, [plate_coords], isClosed=True, color=(0, 0, 255), thickness=2)  # Red lines for plates
+        #print(f"Plate coordinates for Camera {cam_id}: {plate_coords}")
+
         # After drawing the plate, we increment the heatmap value for the pixels that are covered
         for y, x in plate_coords:
             if 0 <= x < cam_width and 0 <= y < cam_height:
+                #print(f"Incrementing heatmap at ({y}, {x})")
                 heatmap[y, x] += 1  # Increment the visited pixel count
 
     # Find the region with the most overlap
     max_visits = np.max(heatmap)
+    max_visits = np.max(heatmap)
+    #print(f"Maximum heatmap value for Camera {cam_id}: {max_visits}")
+
     max_region = np.argwhere(heatmap == max_visits)
 
     # Display results for the current camera
@@ -100,12 +109,34 @@ for camera in camera_objects:
     # visualize the heatmap
     normalized_heatmap = cv2.normalize(heatmap, None, 0, 255, cv2.NORM_MINMAX, dtype=cv2.CV_8U)
     heatmap_colored = cv2.applyColorMap(normalized_heatmap, cv2.COLORMAP_JET)
+    # Convert BGR to RGB for displaying with Matplotlib
+    heatmap_colored_rgb = cv2.cvtColor(heatmap_colored, cv2.COLOR_BGR2RGB)
 
-    # set unused (zero) heatmap values to white
-    heatmap_colored[normalized_heatmap == 0] = [255, 255, 255]  
 
-    # displays canvas for each camera
-    cv2.imshow(f"Camera {cam_id} Heatmap", heatmap_colored)
+
+ 
+
+    # Heatmap of Overlapping Plates
+    plt.figure(figsize=(8, 6))
+    plt.imshow(heatmap_colored_rgb, cmap='jet', origin='upper')
+    plt.colorbar(label="Overlap Intensity")
+    plt.title(f"Camera {cam_id} - Heatmap of Overlapping Plates")
+    plt.xlabel("X Coordinate")
+    plt.ylabel("Y Coordinate")
+    plt.grid(visible=False)  
+    plt.show()
+    plt.close('all')
+
+    # Individual Plate Locations
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cv2.cvtColor(camera_frame, cv2.COLOR_BGR2RGB))  # Convert BGR (OpenCV) to RGB (Matplotlib)
+    plt.title(f"Camera {cam_id} - Individual Plate Locations")
+    plt.xlabel("X Coordinate")
+    plt.ylabel("Y Coordinate")
+    plt.grid(visible=False)  # Optional: Turn off grid lines if not needed
+    plt.show()
+    plt.close('all')
+
 step5_end = time.time()
 print(f"Drawing and displaying frames took {step5_end - step5_start:.4f} seconds")
 
