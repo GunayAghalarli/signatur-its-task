@@ -1,7 +1,7 @@
 
 # License Plate Heatmap Generator
 
-This script generates a heatmap visualization showing areas of high overlap from multiple camera frames, based on license plate coordinates. It reads camera and plate data from an SQLite database and uses OpenCV to create and display the heatmaps for each camera.
+This program was written in Python (3.13.1). It generates a heatmap visualization and camera frame visualization that highlights areas of high overlap from multiple camera frames based on license plate coordinates. The script reads camera and plate data from an SQLite database and uses OpenCV to create and display the heatmaps for each camera. The runtime is approximately 12 minutes.
 
 ## Requirements
 
@@ -44,17 +44,14 @@ Ensure the following files exist:
    - The script identifies the region with the maximum overlap, where plates frequently appear.
 
 4. **Visualization:**
-   - For each camera, a colorized heatmap is generated. The heatmap highlights regions with more plate overlaps with blue color and unused parts of the canvas is white color.
+   - For each camera, a colorized heatmap is generated. The heatmap highlights regions with more plate overlaps with red color and unused parts of the canvas is blue color.
 
-5. **Performance Tracking:**
-   - The script tracks and prints the time taken for different stages (fetching data, processing coordinates, generating the heatmap).
-
-6. **Display:**
+5. **Display:**
    - The script uses OpenCV to display the heatmap for each camera, using a colorized view (using the JET color map). The visualization remains open until a key is pressed.
 
 ## Output
 
-- The script displays heatmaps of the camera frames, where the colors represent the number of plates observed in those regions.
+- The script displays camera canvas and heatmaps of the camera frames, where the colors represent the number of plates observed in those regions.
 - For each camera, the script prints the regions with the most plate overlaps and the count of plates in those regions.
 
 ## How to Run
