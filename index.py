@@ -6,6 +6,7 @@ import json
 import matplotlib.pyplot as plt
 import time
 
+start_time = time.time()
 # Database connection
 db_path = "./signaturits_metadata.db"
 connection = sqlite3.connect(db_path)
@@ -17,9 +18,10 @@ camera_objects = [{"camera_id": cam[0], "width": cam[1], "height": cam[2]} for c
 plate_details = cursor.execute("SELECT camera_id, coordinates FROM readings").fetchall()
 plate_objects = [{"camera_id": plate[0], "coordinates": plate[1]} for plate in plate_details]
 
+# Organize coordinates into lists
 for plate in plate_objects:
     coordinates_str = plate['coordinates']
-    # Clean '\n' add ',' between coordinates and arrays in the coordinates_str
+    # Add commas, replace '\n' with ' ' in the coordinates_str
     coordinates_str = re.sub(r'\s+', ',', coordinates_str.replace('\n', ' ').strip())
     coordinates_str = re.sub(r'\[\s*,', '[', coordinates_str)  # Handle cases like [,779]
     try:
@@ -48,7 +50,6 @@ for camera in camera_objects:
 
     # Get plates associated with this camera
     plates = plates_by_camera.get(cam_id, [])
-
     # Process each plate
     for plate in plates:
         if not plate['coordinates']:
@@ -61,8 +62,7 @@ for camera in camera_objects:
 
         # Create a mask for the current plate
         plate_mask = np.zeros((cam_height, cam_width), dtype=np.float32)
-        cv2.fillPoly(plate_mask, [plate_coords], color=1)
-    
+        cv2.fillPoly(plate_mask, [plate_coords], color=1)    
 
         # Accumulate the plate mask into the heatmap
         cv2.add(composite_heatmap, plate_mask, composite_heatmap)
@@ -100,5 +100,9 @@ for camera in camera_objects:
     plt.show()
 
 # Clean up
+cv2.waitKey(0)
 cv2.destroyAllWindows()
 connection.close()
+end_time = time.time()
+print(f"Time taken to run the program: {(end_time - start_time) / 60:.2f} minutes")
+
